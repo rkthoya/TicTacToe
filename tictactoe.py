@@ -16,11 +16,11 @@ def print_board(board):
     print("   |   |")
 
 
-def get_players_letters():
+def get_player_letter():
     """Asks the first player to pick the letter they'll play with.
     Returns a list with Player1's letter as the first item and Player2's as
     the second"""
-    letter = input("Player 1, would you like to be X or O?").upper()
+    letter = input("Would you like to be X or O? \n").upper()
     while not (letter == 'X' or letter == 'O'):
         print('Please type either X or O?')
         letter = input().upper()
@@ -31,11 +31,11 @@ def get_players_letters():
 
 
 def plays_first():
-    """Chooses the player to go first randomly."""
+    """Randomly chooses who will play first."""
     if random.randint(0, 1) == 0:
-        return 'Player 1'
+        return 'Computer'
     else:
-        return 'Player 2'
+        return 'Player'
 
 
 def is_valid_move(board, move):
@@ -44,7 +44,7 @@ def is_valid_move(board, move):
 
 
 def player_move(board):
-    """Get's a player's move."""
+    """Get's the player's move."""
     move = input("Move: ")
     while str(move) not in '1 2 3 4 5 6 7 8 9'.split() or not is_valid_move(board, (int(move) - 1)):
         print("That move is invalid. Please select another move.")
@@ -52,8 +52,8 @@ def player_move(board):
     return int(move)
 
 
-def make_move(board, letter, move):
-    """Writes a player's move onto the board."""
+def make_player_move(board, letter, move):
+    """Writes player's a move onto the board."""
     board[move - 1] = letter
 
 
@@ -71,6 +71,28 @@ def wins_game(brd, lttr):
        (brd[0] == lttr and brd[4] == lttr and brd[8] == lttr) or
        (brd[2] == lttr and brd[4] == lttr and brd[6] == lttr)
     )
+
+
+def get_random_move(board, slots):
+    valid_moves = []
+    for slot in slots:
+        if is_valid_move(board, slot):
+            valid_moves.append(slot)
+
+    if len(valid_moves) != 0:
+        return random.choice(valid_moves)
+    else:
+        return None
+
+
+def computer_move(board, computer_letter):
+    move = get_random_move(board, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    if move is not None:
+        return move
+
+
+def make_computer_move(board, letter, move):
+    board[move] = letter
 
 
 def is_board_full(board):
@@ -91,46 +113,44 @@ print("The board will be numbered top to bottom. Top left is Slot 1 and Bottom r
 
 while True:
     game_board = [" "] * 9
-    player_1, player_2 = get_players_letters()
+    player_letter, computer_letter = get_player_letter()
     turn = plays_first()
     print("")
-    print(f"{turn} will go first.")
+    print(f"The {turn} will go first.")
     game_running = True
 
     while game_running:
-        if turn == "Player 1":
+        if turn == "Player":
             print("")
-            print("Player 1's turn. Select a spot 1-9.")
+            print("Your turn. Select a spot 1-9.")
             print_board(game_board)
             move = player_move(game_board)
-            make_move(game_board, player_1, move)
+            make_player_move(game_board, player_letter, move)
 
-            if wins_game(game_board, player_1):
+            if wins_game(game_board, player_letter):
                 print_board(game_board)
-                print("Player 1 wins this game. Congratulations!")
+                print("You win this game. Congratulations!")
                 game_running = False
             else:
                 if is_board_full(game_board):
                     print("The game is tied.")
                     break
                 else:
-                    turn = "Player 2"
+                    turn = "Computer"
         else:
-            print("")
-            print("Player 2's turn. Select a spot 1-9.")
-            print_board(game_board)
-            move = player_move(game_board)
-            make_move(game_board, player_2, move)
+            move = computer_move(game_board, computer_letter)
+            make_computer_move(game_board, computer_letter, move)
 
-            if wins_game(game_board, player_2):
+            if wins_game(game_board, computer_letter):
                 print_board(game_board)
-                print("Player 2 wins this game. Congratulations!")
+                print("The computer wins this game. Better luck next time.")
                 game_running = False
             else:
                 if is_board_full(game_board):
                     print("The game is tied.")
                     break
                 else:
-                    turn = "Player 1"
+                    turn = "Player"
     if not restart_game():
+        print("Thanks for playing. See you next time.")
         break
