@@ -85,10 +85,36 @@ def get_random_move(board, slots):
         return None
 
 
+def duplicate_board(board):
+    board_copy = []
+    for slot in board:
+        board_copy.append(slot)
+    return board_copy
+
+
 def computer_move(board, computer_letter):
-    move = get_random_move(board, [0, 1, 2, 3, 4, 5, 6, 7, 8])
+    for i in range(0, 9):
+        copy = duplicate_board(board)
+        if is_valid_move(copy, i):
+            make_computer_move(copy, computer_letter, i)
+            if wins_game(copy, computer_letter):
+                return i
+
+    for i in range(0, 9):
+        copy = duplicate_board(board)
+        if is_valid_move(copy, i):
+            make_computer_move(copy, player_letter, i)
+            if wins_game(copy, player_letter):
+                return i
+
+    move = get_random_move(board, [0, 2, 6, 8])
     if move is not None:
         return move
+
+    if is_valid_move(board, 4):
+        return 4
+
+    return get_random_move(board, [1, 3, 5, 7])
 
 
 def make_computer_move(board, letter, move):
@@ -133,6 +159,7 @@ while True:
                 game_running = False
             else:
                 if is_board_full(game_board):
+                    print_board(game_board)
                     print("The game is tied.")
                     break
                 else:
@@ -147,6 +174,7 @@ while True:
                 game_running = False
             else:
                 if is_board_full(game_board):
+                    print_board(game_board)
                     print("The game is tied.")
                     break
                 else:
